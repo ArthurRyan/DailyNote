@@ -1,0 +1,26 @@
+None、0、空字符串、以及没有元素的容器对象都可视为 False，反之为 True。
+>>> map(bool, [None, 0, "", u"", list(), tuple(), dict(), set(), frozenset()])
+[False, False, False, False, False, False, False, False, False]
+
+
+Python程序运行时频繁地需要创建和销毁小对象，为了避免大量的malloc和free操作，Python使用了内存池的技术。
+•    一系列的 arena(每个管理256KB) 构成一个内存区域的链表
+•    每个 arena 有很多个 pool(每个4KB) 构成
+•    每次内存的申请释放将在一个 pool 内进行
+
+----Python如何获取变量a的内存地址，并改成16进制表示
+print(id(a))
+print(hex(id(a)))
+
+----Python对于“小数”的内存存储机制。
+使用PyIntBlock/PyFloatBlock进行数组存储。来进行“小数”的内存复用。只有当进程结束时，这部分内存才会被回收。
+当使用sys.getrefcount()来计数时，getrefcount本身会产生一次引用，所以会比引用数多一次。
+
+
+内存池、线程池等都是为了减少在运行期间频繁申请资源造成的开销，在Python中用intern( 函数可以把运行期动态生成的字符串“池化”
+
+动态语言的一大特点就是：对象的引用和实际存储是分开的。
+
+在编码中，应该尽可能用元组代替列表。除内存复用更高效外，其只读特征更利于并行开发。
+对于大字典，调用 keys()、values()、items() 会构造同样巨大的列表。建议用迭代器替代，以减少内存开销。
+要判断两个字典间的差异，使用视图是最简便的做法。
