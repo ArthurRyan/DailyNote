@@ -1,0 +1,31 @@
+包括函数在内的所有对象都是第一类对象，可作为其他函数的实参或返回值。
+•在名字空间中，名字是唯一主键。因此函数在同一范围内不能 "重载 (overload)"。
+•函数总是有返回值。就算没有 return，默认也会返回 None。
+•支持递归调用，但不进行尾递归优化。最大深度 sys.getrecursionlimit()。
+
+Python方法定义：
+typedef struct {
+    PyObject_HEAD
+    PyObject *func_code;   // PyCodeObject
+    PyObject *func_globals;  // 所在模块的全局名字空间
+    PyObject *func_defaults;  // 参数默认值列表
+    PyObject *func_closure;  // 闭包列表
+    PyObject *func_doc;   // __doc__
+    PyObject *func_name;   // __name__
+    PyObject *func_dict;   // __dict__
+    PyObject *func_weakreflist;  // 弱引用链表
+    PyObject *func_module;  // 所在 Module
+} PyFunctionObject;
+
+
+支持参数默认值。不过要小心，默认值对象在创建函数时生成，所有调用都使用同一对象。
+默认参数后面不能有其他位置参数，除非是变参。
+用 *args 收集 "多余" 的位置参数，**kwargs 收集 "额外" 的命名参数。这两个名字只是惯例，可自由命名。
+
+
+如果仅仅是引用外部变量，那么按 LEGB 顺序在不同作用域查找该名字。
+名字查找顺序: locals -> enclosing function -> globals -> __builtins__
+•locals: 函数内部名字空间，包括局部变量和形参。
+•enclosing function: 外部嵌套函数的名字空间。
+•globals: 函数定义所在模块的名字空间。
+•builtins: 内置模块的名字空间。 想想看，如果将对象引入 builtins 名字空间，那么就可以在任何模块中直接访问，如同内置函数那样。不过鉴于 builtins 的特殊性，这似乎不是个好主意。
